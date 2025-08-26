@@ -30,13 +30,13 @@ function loadCasino(url) {
   iframe.src = proxiedUrl;
 }
 
-// Override window.open to force new tabs through the proxy
+// Override window.open to force all new tabs through the proxy
 window.open = function(url) {
   loadCasino(url);
   return iframe.contentWindow;
 };
 
-// Load main casino.click page
+// Load the main casino.click page
 loadCasino('https://casino.click');
 </script>
 </body>
