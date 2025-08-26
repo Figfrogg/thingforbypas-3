@@ -2,46 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Casino AllOrigins Wrapper</title>
+<title>Proxyium Wrapper</title>
 <style>
-  html, body { margin:0; padding:0; height:100%; overflow:hidden; }
-  #frameContainer { width:100%; height:100%; border:none; overflow:auto; }
-  iframe { width:100%; height:100%; border:none; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
 </style>
 </head>
 <body>
-<div id="frameContainer">
-  <iframe id="casinoFrame" src=""></iframe>
-</div>
+  <iframe src="https://proxyium.com" id="proxyiumFrame"></iframe>
 
-<script>
-const iframe = document.getElementById('casinoFrame');
-
-async function loadCasino(url) {
-  try {
-    // Fetch via AllOrigins to bypass CORS
-    const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    let html = data.contents;
-
-    // Rewrite internal links to stay inside iframe
-    html = html.replace(/href="(\/[^"]*)"/g, 'href="#" onclick="parent.loadCasino(\'' + url.split('/')[0] + '$1\')"');
-    html = html.replace(/target="_blank"/g, 'target="_self"');
-
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
-    iframe.src = blobUrl;
-  } catch (err) {
-    console.error("Failed to load casino:", err);
-  }
-}
-
-// Expose loadCasino globally so rewritten links can call it
-window.loadCasino = loadCasino;
-
-// Load main page
-loadCasino('https://casino.click');
-</script>
+  <script>
+    // Optional: attempt to force links to stay inside iframe (limited by cross-origin policy)
+    const iframe = document.getElementById('proxyiumFrame');
+    iframe.onload = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.querySelectorAll('a').forEach(a => a.setAttribute('target', '_self'));
+      } catch (e) {
+        console.warn('Cannot modify links due to cross-origin restrictions');
+      }
+    };
+  </script>
 </body>
 </html>
