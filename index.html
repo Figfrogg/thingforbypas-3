@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Proxyium Wrapper</title>
+<title>Casino Click Proxy Wrapper</title>
 <style>
   html, body {
     margin: 0;
@@ -18,19 +18,26 @@
 </style>
 </head>
 <body>
-  <iframe src="https://proxyium.com" id="proxyiumFrame"></iframe>
+<iframe id="casinoFrame" src=""></iframe>
 
-  <script>
-    // Optional: attempt to force links to stay inside iframe (limited by cross-origin policy)
-    const iframe = document.getElementById('proxyiumFrame');
-    iframe.onload = () => {
-      try {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        doc.querySelectorAll('a').forEach(a => a.setAttribute('target', '_self'));
-      } catch (e) {
-        console.warn('Cannot modify links due to cross-origin restrictions');
-      }
-    };
-  </script>
+<script>
+const iframe = document.getElementById('casinoFrame');
+const proxyBase = 'https://thingproxy.freeboard.io/fetch/';
+
+// Function to load a URL through the proxy
+function loadCasino(url) {
+  const proxiedUrl = proxyBase + encodeURIComponent(url);
+  iframe.src = proxiedUrl;
+}
+
+// Override window.open to force new tabs through the proxy
+window.open = function(url) {
+  loadCasino(url);
+  return iframe.contentWindow;
+};
+
+// Load main casino.click page
+loadCasino('https://casino.click');
+</script>
 </body>
 </html>
