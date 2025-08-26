@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lightweight Casino Wrapper</title>
+  <title>Casino Wrapper</title>
   <style>
     html, body {
       margin: 0;
@@ -18,6 +18,24 @@
   </style>
 </head>
 <body>
-  <iframe src="https://casino.click"></iframe>
+  <iframe id="casinoFrame" src="https://casino.click"></iframe>
+
+  <script>
+    const iframe = document.getElementById('casinoFrame');
+
+    // Listen for link clicks inside the iframe and force them to open inside the iframe
+    iframe.onload = () => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+        iframeDoc.querySelectorAll('a').forEach(a => {
+          a.setAttribute('target', '_self'); // open in same iframe
+        });
+      } catch (e) {
+        // Cross-origin policy: cannot access the contentDocument of external sites
+        console.warn('Cannot access iframe content due to cross-origin restrictions');
+      }
+    };
+  </script>
 </body>
 </html>
