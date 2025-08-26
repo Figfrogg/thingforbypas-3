@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Casino Self-Contained Proxy</title>
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; }
+  #frameContainer { width:100%; height:100%; border:none; overflow:auto; }
+  iframe { width:100%; height:100%; border:none; }
+</style>
+</head>
+<body>
+<div id="frameContainer">
+  <iframe id="casinoFrame" src=""></iframe>
+</div>
+
+<script>
+const iframe = document.getElementById('casinoFrame');
+
+async function loadCasino(url) {
+  try {
+    const response = await fetch('https://cors-anywhere.herokuapp.com/' + url);
+    let html = await response.text();
+
+    // Rewrite links to stay in the iframe
+    html = html.replace(/href="(\/[^"]*)"/g, 'href="#" onclick="parent.loadCasino(\'' + url + '$1\')"');
+    html = html.replace(/target="_blank"/g, 'target="_self"');
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
+    iframe.src = blobUrl;
+  } catch (err) {
+    console.error("Failed to load casino:", err);
+  }
+}
+
+// Expose loadCasino globally so rewritten links can call it
+window.loadCasino = loadCasino;
+
+// Load main page
+loadCasino('https://casino.click');
+</script>
+</body>
+</html>
